@@ -8,6 +8,7 @@ class GoogleLogin extends Component {
   constructor(props) {
     super(props)
     this.signIn = this.signIn.bind(this)
+    this.reloadAuthToken = this.reloadAuthToken.bind(this)
     this.enableButton = this.enableButton.bind(this)
     this.state = {
       disabled: true,
@@ -31,6 +32,7 @@ class GoogleLogin extends Component {
       scope,
       accessType,
       responseType,
+      authReloadInterval,
       jsSrc
     } = this.props
     ;((d, s, id, cb) => {
@@ -81,9 +83,18 @@ class GoogleLogin extends Component {
         }
       })
     })
+
+    if (authReloadInterval > 0) {
+      this.authReloadIntervalHandle = window.setInterval(() => {
+        this.reloadAuthToken()
+      }, authReloadInterval)
+    }
   }
   componentWillUnmount() {
     this.enableButton = () => {}
+    if (this.props.authReloadInterval > 0) {
+      window.clearInterval(this.authReloadIntervalHandle)
+    }
   }
   enableButton() {
     this.setState({
@@ -108,6 +119,26 @@ class GoogleLogin extends Component {
       }
     }
   }
+  reloadAuthToken() {
+    const auth2 = window.gapi.auth2.getAuthInstance()
+    if (!this.props.isSignedIn || !auth2.isSignedIn.get()) {
+      this.signIn()
+
+      return
+    }
+    auth2.currentUser
+      .get()
+      .reloadAuthResponse()
+      .then(
+        successResponse => {
+          this.props.onAuthReloadSuccess(successResponse)
+        },
+        failResponse => {
+          this.props.onAuthReloadFailure(failResponse)
+        }
+      )
+  }
+
   handleSigninSuccess(res) {
     /*
       offer renamed response keys to names that match use
@@ -209,6 +240,9 @@ class GoogleLogin extends Component {
 
 GoogleLogin.propTypes = {
   onSuccess: PropTypes.func.isRequired,
+  onAuthReloadSuccess: PropTypes.func,
+  onAuthReloadFailure: PropTypes.func,
+  authReloadInterval: PropTypes.number,
   onFailure: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,
   jsSrc: PropTypes.string,
@@ -255,6 +289,9 @@ GoogleLogin.defaultProps = {
   icon: true,
   theme: 'light',
   onRequest: () => {},
+  onAuthReloadSuccess: () => {},
+  onAuthReloadFailure: () => {},
+  authReloadInterval: 0,
   jsSrc: 'https://apis.google.com/js/api.js'
 }
 

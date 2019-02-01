@@ -31,8 +31,8 @@
     "google-oAuth"
   ],
   "author": {
-    "name": "Anthony Grove",
-    "email": "anthony@th3legend.com"
+    "name": "Anthony Grove, adapted to AppLike's needs by Sebastian Struß",
+    "email": "anthony@th3legend.com,struss@applike.info"
   },
   "license": "MIT",
   "bugs": {
