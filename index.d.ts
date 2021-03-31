@@ -136,7 +136,8 @@ export interface UseGoogleLogoutResponse {
 export interface UseGoogleLogoutProps { 
   readonly clientId: string,
   readonly onLogoutSuccess?: () => void;
-  readonly onFailure?: () => void;
+  readonly onFailure?: (reason: {error: string, details: string}) => any;
+  readonly onScriptLoadFailure?: (reason: {error: string, details: string}) => any;
   readonly accessType?: string;
   readonly fetchBasicProfile?: boolean;
   readonly cookiePolicy?: string;
