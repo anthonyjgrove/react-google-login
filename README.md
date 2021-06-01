@@ -67,7 +67,7 @@ ReactDOM.render(
 ```js
 import { useGoogleLogin } from 'react-google-login'
 
-const { signIn, loaded } = useGoogleLogin({
+const { signIn, addScopes, loaded } = useGoogleLogin({
     onSuccess,
     onAutoLoadFinished,
     clientId,
@@ -109,6 +109,7 @@ const { signOut, loaded } = useGoogleLogout({
     onLogoutSuccess
   })
 ```
+
 ## onSuccess callback
 
 If responseType is not 'code', callback will return the GoogleAuth object.
@@ -246,7 +247,6 @@ onFailure callback is called when either initialization or a signin attempt fail
 |   details     |  string  |      Detailed error description      |
 
 
-
 Common error codes include:
 
 | error code | description |
@@ -260,6 +260,47 @@ More details can be found in the official Google docs:
  * [GoogleAuth.then(onInit, onError)](https://developers.google.com/identity/sign-in/web/reference#googleauththenoninit-onerror)
  * [GoogleAuth.signIn(options)](https://developers.google.com/identity/sign-in/web/reference#googleauthsigninoptions)
  * [GoogleAuth.grantOfflineAccess(options)](https://developers.google.com/identity/sign-in/web/reference#googleauthgrantofflineaccessoptions)
+
+
+## Request Additional Scopes
+
+At sign-in, your application requests "base" scopes such as "profile email". If
+the user wants to perform an action that requires additional scopes, your app can
+request the user to authorizes only the new scopes from a consent screen.
+
+You can use `addScopes` from `useGoogleLogin` hook to request additional scopes
+with `cliendId`, `onAddScopesSuccess`, and `onAddScopesFailure` as shown in the
+example. If you want to grant offline access to the new scopes, don't forget to
+also include `responseType: 'code'` and `promp: 'consent'`.
+
+NOTE: `addScopes` can only be used if the user is already logged in.
+
+```js
+import { useGoogleLogin } from 'react-google-login'
+
+const { addScopes } = useGoogleLogin({
+  clientId,
+  onAddScopesSuccess,
+  onAddScopesSuccess
+})
+```
+
+More details about this workflow can be found in the official Google docs:
+ * [Requesting additional permissions](https://developers.google.com/identity/sign-in/web/incremental-auth)
+
+
+### onAddScopesSuccess callback
+
+onAddScopesSuccess should be set when you request additional scopes. This callback returns a GoogleUser object which provides access to all of
+the GoogleUser properties listed in the above [onSuccess callback section](#onsuccess-callback--w-offline-false).
+
+
+## onAddScopesFailure callback
+
+onAddScopesSuccess is called when the additional scope request fails.
+
+See properties and common errors in [onFailure callback section](#onfailure-callback).
+
 
 ## Dev Server
 ```

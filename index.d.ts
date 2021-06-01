@@ -128,12 +128,12 @@ export class GoogleLogout extends Component<GoogleLogoutProps, unknown> {
   public signOut(): void;
 }
 
-export interface UseGoogleLogoutResponse { 
+export interface UseGoogleLogoutResponse {
   signOut: () => void;
   loaded: boolean;
 }
 
-export interface UseGoogleLogoutProps { 
+export interface UseGoogleLogoutProps {
   readonly clientId: string,
   readonly onLogoutSuccess?: () => void;
   readonly onFailure?: () => void;
@@ -151,14 +151,17 @@ export interface UseGoogleLogoutProps {
 
 export function useGoogleLogout(input: UseGoogleLogoutProps): UseGoogleLogoutResponse;
 
-export interface UseGoogleLoginResponse { 
+export interface UseGoogleLoginResponse {
   signIn: () => void;
+  addScopes: (scopes: string) => void;
   loaded: boolean;
 }
 
-export interface UseGoogleLoginProps { 
+export interface UseGoogleLoginProps {
   readonly onSuccess?: (response: GoogleLoginResponse | GoogleLoginResponseOffline) => void,
   readonly onFailure?: (error: any) => void,
+  readonly onAddScopesSuccess?: (response: GoogleLoginResponse | GoogleLoginResponseOffline) => void,
+  readonly onAddScopesFailure?: (error: any) => void,
   readonly onScriptLoadFailure?: (error: any) => void,
   readonly onAutoLoadFinished?: (successLogin: boolean) => void,
   readonly clientId: string,
